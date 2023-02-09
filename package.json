@@ -5,10 +5,12 @@
   },
   "dependencies": {
     "lite-ts-parser": "^1.1.0",
+    "lodash": "^4.17.21",
     "xlsx": "^0.18.5"
   },
   "description": "xlsx扩展",
   "devDependencies": {
+    "@types/lodash": "^4.14.191",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.18",
     "ts-node": "^10.9.1",
