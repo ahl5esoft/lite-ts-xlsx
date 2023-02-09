@@ -1,6 +1,6 @@
 import { IParser, ParserFactoryBase } from 'lite-ts-parser';
-import { read, utils, WorkSheet } from 'xlsx';
 import lodash from 'lodash';
+import { read, utils, WorkSheet } from 'xlsx';
 
 import { IEnumFactory } from './i-enum-factory';
 import { ISheetParseOption, SheetParser } from './sheet-parser';
@@ -73,10 +73,19 @@ export class DomParser implements IParser {
     private getSheetRange(sheet: WorkSheet) {
         const sheetWithValues = lodash.pickBy(sheet, r => !!r.v);
         const cellNames = lodash.keys(sheetWithValues);
-        const cellAddreses = cellNames.map(r => utils.decode_cell(r));
-        const maxRow = lodash.max(cellAddreses.map(r => r.r));
-        const maxCell = lodash.max(cellAddreses.map(r => r.c));
-        const lastCell = utils.encode_cell({ c: maxCell, r: maxRow });
+        const cellAddreses = cellNames.map(r => {
+            return utils.decode_cell(r);
+        });
+        const maxRow = lodash.max(
+            cellAddreses.map(r => r.r),
+        );
+        const maxCell = lodash.max(
+            cellAddreses.map(r => r.c),
+        );
+        const lastCell = utils.encode_cell({
+            c: maxCell,
+            r: maxRow,
+        });
         return `A1:${lastCell}`;
     }
 }
