@@ -14,6 +14,8 @@ export interface ISheetParseOption {
 }
 
 export class SheetParser implements IParser {
+    public static cover = 'cover';
+
     private m_Parsers: CellParserBase[];
 
     public constructor(
@@ -30,9 +32,11 @@ export class SheetParser implements IParser {
     }
 
     public async parse(opt: ISheetParseOption) {
-        let allEnumItem: { [value: number]: IEnumItem };
-        if (opt.sheetName.endsWith('Data'))
-            allEnumItem = await this.m_EnumFactory.build<IEnumItem>(opt.sheetName).allItem;
+        let allEnumItem: { [value: number]: IEnumItem; };
+        const sheetNames = opt.sheetName.split('.');
+        const sheetName = sheetNames[0];
+        if (sheetName.endsWith('Data') && sheetNames[1] !== SheetParser.cover)
+            allEnumItem = await this.m_EnumFactory.build<IEnumItem>(sheetName).allItem;
 
         let rows = [];
         for (const [i, r] of opt.rows.entries()) {
