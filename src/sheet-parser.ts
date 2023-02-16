@@ -65,31 +65,29 @@ export class SheetParser implements IParser {
             }
 
             rows.push(row);
+        }
 
-            for (const r of rows) {
-                Object.keys(r).forEach(cr => {
-                    const fields = cr.split('.');
-                    if (fields.length == 1)
-                        return;
+        for (const r of rows) {
+            Object.keys(r).forEach(cr => {
+                const fields = cr.split('.');
+                if (fields.length == 1)
+                    return;
 
-                    const lastField = fields.pop();
-                    fields.reduce((memo, sr) => {
-                        memo[sr] ??= {};
-                        return memo[sr];
-                    }, r)[lastField] = r[cr];
-                    delete r[cr];
-                });
-            }
+                const lastField = fields.pop();
+                fields.reduce((memo, sr) => {
+                    memo[sr] ??= {};
+                    return memo[sr];
+                }, r)[lastField] = r[cr];
+                delete r[cr];
+            });
 
             if (!allEnumItem)
                 continue;
 
-            for (const r of rows) {
-                if (allEnumItem[r.value])
-                    Object.assign(allEnumItem[r.value], r);
-                else
-                    allEnumItem[r.value] = r;
-            }
+            if (allEnumItem[r.value])
+                Object.assign(allEnumItem[r.value], r);
+            else
+                allEnumItem[r.value] = r;
         }
 
         return allEnumItem ? Object.values(allEnumItem) : rows;
