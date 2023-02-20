@@ -21,7 +21,6 @@ export class FileParser implements IParser {
         const excel = readFile(filePath, {
             type: 'file'
         });
-        console.log(excel.Sheets);
         const result = {};
         for (const r of excel.SheetNames) {
             excel.Sheets[r]['!ref'] = this.getSheetRange(excel.Sheets[r]);

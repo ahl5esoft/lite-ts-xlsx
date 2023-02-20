@@ -1,6 +1,7 @@
 import { IParser, ParserFactoryBase } from 'lite-ts-parser';
 
 import { CellParserBase } from './cell-parser-base';
+import { CellToArrayParser } from './cell-to-array-parser';
 import { CellToEnumValueParser } from './cell-to-enum-value-parser';
 import { CellToEnumValuesParser } from './cell-to-enum-values-parser';
 import { CellToNewRowExpParser } from './cell-to-new-row-exp-parser';
@@ -23,6 +24,7 @@ export class SheetParser implements IParser {
         private m_ParserFactory: ParserFactoryBase,
     ) {
         this.m_Parsers = [
+            new CellToArrayParser(this.m_ParserFactory),
             new CellToEnumValueParser(this.m_ParserFactory),
             new CellToEnumValuesParser(this.m_ParserFactory),
             new CellToNewRowExpParser(this.m_ParserFactory),
