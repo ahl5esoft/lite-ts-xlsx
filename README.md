@@ -16,4 +16,7 @@ import { DomParser } from 'lite-ts-xlsx';
 const parserFactory = new ParserFactory(enumFactory, {}, {});
 const rows = await new DomParser(enumFactory, progressBar, parserFactory).parse('#id');
 // rows = [{ ... }, ...]
+
+const rows = await new FileParser(enumFactory, parserFactory).parse('./test.xlsx');
+// rows = [{ ... }, ...]
 ```
