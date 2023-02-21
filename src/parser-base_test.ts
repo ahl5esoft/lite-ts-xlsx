@@ -1,13 +1,19 @@
-import { deepStrictEqual } from 'assert';
+import { strictEqual } from 'assert';
 
-import { DomParser as Self } from './dom-parser';
+import { ParserBase } from './parser-base';
 
-describe('src/dom-parser.ts', () => {
+class Self extends ParserBase {
+    protected async getWorkbook() {
+        return null;
+    }
+}
+
+describe('src/parser-base.ts', () => {
     describe('.getSheetRange(sheet: WorkSheet)', () => {
         it('ok', async () => {
-            const self = new Self(null, null, null);
+            const self = new Self(null, null);
 
-            const fn = Reflect.get(self, 'getSheetRange');
+            const fn = Reflect.get(self, 'getSheetRange').bind(self) as (_: any) => string;
             const res = fn({
                 '!ref': 'A1:XEX3557',
                 'A1': { v: 'id' },
@@ -17,8 +23,7 @@ describe('src/dom-parser.ts', () => {
                 'E50': { v: '2' },
                 'T100': { v: '' }
             });
-
-            deepStrictEqual(res, 'A1:E50');
+            strictEqual(res, 'A1:E50');
         });
     });
 });

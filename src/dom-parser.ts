@@ -1,33 +1,28 @@
-import { IParser, ParserFactoryBase } from 'lite-ts-parser';
-import lodash from 'lodash';
-import { read, utils, WorkSheet } from 'xlsx';
+import { ParserFactoryBase } from 'lite-ts-parser';
+import { read, WorkBook } from 'xlsx';
 
 import { IEnumFactory } from './i-enum-factory';
-import { ISheetParseOption, SheetParser } from './sheet-parser';
+import { ParserBase } from './parser-base';
 
 export interface IProgressBar {
     hide(): void;
     show(): void;
 }
 
-export class DomParser implements IParser {
-    private m_SheetParser: IParser;
-    protected get sheetParser() {
-        this.m_SheetParser ??= new SheetParser(this.m_EnumFactory, this.m_ParserFactory);
-        return this.m_SheetParser;
+export class DomParser extends ParserBase {
+    public constructor(
+        private m_ProgressBar: IProgressBar,
+        enumFactory: IEnumFactory,
+        parserFactory: ParserFactoryBase,
+    ) {
+        super(enumFactory, parserFactory);
     }
 
-    public constructor(
-        private m_EnumFactory: IEnumFactory,
-        private m_ProgressBar: IProgressBar,
-        private m_ParserFactory: ParserFactoryBase,
-    ) { }
-
-    public async parse(domSelector: string) {
+    protected async getWorkbook(domSelector: string) {
         this.m_ProgressBar?.show();
 
         const el = document.querySelector(domSelector) as any;
-        return new Promise((s, f) => {
+        return new Promise<WorkBook>((s, f) => {
             const reject = f;
             f = arg => {
                 this.m_ProgressBar?.hide();
@@ -39,23 +34,13 @@ export class DomParser implements IParser {
             if (ext !== 'xlsx' && ext !== 'xls')
                 return f('只能选择excel文件导入');
 
-            const result = {};
             const reader = new FileReader();
             reader.onload = async e => {
-                const data = e.target.result;
-                const excel = read(data, {
+                const excel = read(e.target.result, {
                     type: 'binary',
                 });
-                for (const r of excel.SheetNames) {
-                    excel.Sheets[r]['!ref'] = this.getSheetRange(excel.Sheets[r]);
-                    result[r] = await this.sheetParser.parse({
-                        rows: utils.sheet_to_json(excel.Sheets[r]),
-                        sheetName: r,
-                    } as ISheetParseOption);
-                }
-
                 el.value = null;
-                s(result);
+                s(excel);
             };
             reader.onerror = () => {
                 el.value = null;
@@ -63,29 +48,5 @@ export class DomParser implements IParser {
             };
             reader.readAsBinaryString(file);
         });
-    }
-
-    /**
-     * 获取 sheet 实际范围
-     * 
-     * @param sheet 
-     */
-    private getSheetRange(sheet: WorkSheet) {
-        const sheetWithValues = lodash.pickBy(sheet, r => !!r.v);
-        const cellNames = lodash.keys(sheetWithValues);
-        const cellAddreses = cellNames.map(r => {
-            return utils.decode_cell(r);
-        });
-        const maxRow = lodash.max(
-            cellAddreses.map(r => r.r),
-        );
-        const maxCell = lodash.max(
-            cellAddreses.map(r => r.c),
-        );
-        const lastCell = utils.encode_cell({
-            c: maxCell,
-            r: maxRow,
-        });
-        return `A1:${lastCell}`;
     }
 }
