@@ -44,9 +44,6 @@ export class SheetParser implements IParser {
 
             const row: any = {};
             for (let [k, v] of Object.entries(r)) {
-                if (v == null)
-                    continue;
-
                 const parser = this.m_Parsers.find(cr => {
                     return cr.isMatch(k);
                 });
