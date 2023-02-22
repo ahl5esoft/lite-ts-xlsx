@@ -204,7 +204,7 @@ describe('src/parser-base.ts', () => {
             }
             const res = await self.parse('');
             deepStrictEqual(res, {
-                'ValueTypeData$': [
+                'ValueTypeData': [
                     {
                         value: 1,
                         material: [
@@ -222,6 +222,7 @@ describe('src/parser-base.ts', () => {
                         ],
                         fixed: [
                             {
+                                index: 0,
                                 rewards: [
                                     {
                                         count: 1,
@@ -231,6 +232,7 @@ describe('src/parser-base.ts', () => {
                                 conditions: [1, 1, 3, 2]
                             },
                             {
+                                index: 1,
                                 rewards: [
                                     {
                                         count: 1,
@@ -240,16 +242,6 @@ describe('src/parser-base.ts', () => {
                                 conditions: [10, 11, 3, 2]
                             }
                         ]
-                    }
-                ],
-                'ValueTypeData$.fixed': [
-                    {
-                        rewards: [{ count: 1, valueType: 3 }],
-                        conditions: [1, 1, 3, 2]
-                    },
-                    {
-                        rewards: [{ count: 1, valueType: 4 }],
-                        conditions: [10, 11, 3, 2]
                     }
                 ]
             });

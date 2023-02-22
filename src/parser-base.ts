@@ -6,7 +6,6 @@ import { IEnumFactory } from './i-enum-factory';
 import { ISheetParseOption, SheetParser } from './sheet-parser';
 
 interface SheetData {
-    index?: number;
     value?: number;
     [key: string]: any;
 }
@@ -32,19 +31,19 @@ export abstract class ParserBase implements IParser {
             } as ISheetParseOption);
 
             const [enumName, field] = r.split('.');
-            if (field && result[enumName]) {
+            const name = enumName.replace('$', '');
+            if (field && result[name]) {
                 for (const r of res) {
-                    const sheedData = result[enumName].find(cr => cr.value == r.value);
+                    const sheedData = result[name].find(cr => cr.value == r.value);
                     if (sheedData) {
                         sheedData[field] ??= [];
-                        const index = r.index;
-                        delete r.index;
                         delete r.value;
-                        sheedData[field][index] = r;
+                        sheedData[field].push(r);
                     }
                 }
+            } else {
+                result[r.replace('$', '')] = res;
             }
-            result[r] = res;
         }
         return result;
     }
