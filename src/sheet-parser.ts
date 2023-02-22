@@ -34,7 +34,7 @@ export class SheetParser implements IParser {
     public async parse(opt: ISheetParseOption) {
         let allEnumItem: { [value: number]: IEnumItem; };
         const sheetNameParts = opt.sheetName.split('.');
-        if (!opt.sheetName.includes(SheetParser.unmergeFlag) && sheetNameParts[0].endsWith('Data'))
+        if (!opt.sheetName.includes(SheetParser.unmergeFlag) && !sheetNameParts[1] && sheetNameParts[0].endsWith('Data'))
             allEnumItem = await this.m_EnumFactory.build<IEnumItem>(sheetNameParts[0]).allItem;
 
         let rows = [];
