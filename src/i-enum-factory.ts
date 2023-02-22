@@ -5,7 +5,8 @@ export interface IEnumItem {
 }
 
 export interface IEnum<T extends IEnumItem> {
-    readonly allItem: Promise<{ [value: number]: T }>;
+    readonly allItem: Promise<{ [value: number]: T; }>;
+    get(predicate: (item: T) => boolean): Promise<T>;
 }
 
 export interface IEnumFactory {

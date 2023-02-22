@@ -1,7 +1,6 @@
 import { IParser, ParserFactoryBase } from 'lite-ts-parser';
 
 import { CellParserBase } from './cell-parser-base';
-import { CellToArrayParser } from './cell-to-array-parser';
 import { CellToEnumValueParser } from './cell-to-enum-value-parser';
 import { CellToEnumValuesParser } from './cell-to-enum-values-parser';
 import { CellToNewRowExpParser } from './cell-to-new-row-exp-parser';
@@ -15,7 +14,7 @@ export interface ISheetParseOption {
 }
 
 export class SheetParser implements IParser {
-    public static cover = 'cover';
+    public static unmergeFlag = '$';
 
     private m_Parsers: CellParserBase[];
 
@@ -24,7 +23,6 @@ export class SheetParser implements IParser {
         private m_ParserFactory: ParserFactoryBase,
     ) {
         this.m_Parsers = [
-            new CellToArrayParser(this.m_ParserFactory),
             new CellToEnumValueParser(this.m_ParserFactory),
             new CellToEnumValuesParser(this.m_ParserFactory),
             new CellToNewRowExpParser(this.m_ParserFactory),
@@ -36,7 +34,7 @@ export class SheetParser implements IParser {
     public async parse(opt: ISheetParseOption) {
         let allEnumItem: { [value: number]: IEnumItem; };
         const sheetNameParts = opt.sheetName.split('.');
-        if (sheetNameParts[0].endsWith('Data') && sheetNameParts[1] !== SheetParser.cover)
+        if (!opt.sheetName.includes(SheetParser.unmergeFlag) && sheetNameParts[0].endsWith('Data'))
             allEnumItem = await this.m_EnumFactory.build<IEnumItem>(sheetNameParts[0]).allItem;
 
         let rows = [];
@@ -46,7 +44,7 @@ export class SheetParser implements IParser {
 
             const row: any = {};
             for (let [k, v] of Object.entries(r)) {
-                if (!v)
+                if (v == null)
                     continue;
 
                 const parser = this.m_Parsers.find(cr => {

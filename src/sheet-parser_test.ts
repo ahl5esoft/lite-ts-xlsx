@@ -90,7 +90,7 @@ describe('src/sheet-parser.ts', () => {
                     'a:b': 1,
                     'c.d.i:e': 'f'
                 }],
-                sheetName: `EnumData.${Self.cover}`,
+                sheetName: `EnumData.${Self.unmergeFlag}`,
             });
             deepStrictEqual(res, [{
                 a: 'g',
