@@ -4,6 +4,7 @@ export interface ICellParseOption {
     cellValue: any;
     row: any;
     rows: any[];
+    temp?: any;
 }
 
 export abstract class CellParserBase implements IParser {

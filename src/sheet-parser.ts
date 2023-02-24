@@ -3,8 +3,10 @@ import { IParser, ParserFactoryBase } from 'lite-ts-parser';
 import { CellParserBase } from './cell-parser-base';
 import { CellToEnumValueParser } from './cell-to-enum-value-parser';
 import { CellToEnumValuesParser } from './cell-to-enum-values-parser';
+import { CellToMatrixParser } from './cell-to-matrix-parser';
 import { CellToNewRowExpParser } from './cell-to-new-row-exp-parser';
 import { CellToNewRowFieldParser } from './cell-to-new-row-field-parser';
+import { CellToObjectParser } from './cell-to-object-paser';
 import { CellWithNewRowParser } from './cell-with-new-row-parser';
 import { IEnumFactory, IEnumItem } from './i-enum-factory';
 
@@ -25,8 +27,10 @@ export class SheetParser implements IParser {
         this.m_Parsers = [
             new CellToEnumValueParser(this.m_ParserFactory),
             new CellToEnumValuesParser(this.m_ParserFactory),
+            new CellToMatrixParser(this.m_ParserFactory),
             new CellToNewRowExpParser(this.m_ParserFactory),
             new CellToNewRowFieldParser(this.m_ParserFactory),
+            new CellToObjectParser(this.m_ParserFactory),
             new CellWithNewRowParser(this.m_ParserFactory),
         ];
     }
@@ -38,6 +42,7 @@ export class SheetParser implements IParser {
             allEnumItem = await this.m_EnumFactory.build<IEnumItem>(sheetNameParts[0]).allItem;
 
         let rows = [];
+        const temp = {};
         for (const [i, r] of opt.rows.entries()) {
             if (i == 0)
                 continue;
@@ -52,6 +57,7 @@ export class SheetParser implements IParser {
                         cellValue: v,
                         row,
                         rows,
+                        temp
                     });
                     if (res)
                         row[res.field] = res.value;
@@ -61,7 +67,19 @@ export class SheetParser implements IParser {
                 }
             }
 
-            rows.push(row);
+            if (Object.keys(temp).length) {
+                const item = rows.find(r => r.value == row.value);
+                if (item) {
+                    item['$'] = temp[row.value];
+                } else {
+                    rows.push({
+                        value: row.value,
+                        '$': temp[row.value]
+                    });
+                }
+            } else {
+                rows.push(row);
+            }
         }
 
         for (const r of rows) {
