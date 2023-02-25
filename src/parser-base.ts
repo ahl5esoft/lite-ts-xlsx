@@ -25,25 +25,22 @@ export abstract class ParserBase implements IParser {
         const result: { [key: string]: SheetData[]; } = {};
         for (const r of wb.SheetNames) {
             wb.Sheets[r]['!ref'] = this.getSheetRange(wb.Sheets[r]);
-            const res: SheetData[] = await this.m_SheetParser.parse({
+            result[r] = await this.m_SheetParser.parse({
                 rows: utils.sheet_to_json(wb.Sheets[r]),
                 sheetName: r,
             } as ISheetParseOption);
+        }
 
-            const [enumName, field] = r.split('.');
-            const name = enumName.replace('$', '');
-            if (field && result[name]) {
-                for (const r of res) {
-                    const sheedData = result[name].find(cr => cr.value == r.value);
-                    if (sheedData) {
-                        sheedData[field] ??= [];
-                        delete r.value;
-                        sheedData[field].push(r);
-                    }
-                }
-            } else {
-                result[r.replace('$', '')] = res;
+        for (const [k, v] of Object.entries(result)) {
+            const [target, field] = k.split('.');
+            if (!field)
+                continue;
+
+            for (const r of v) {
+                const sheedData = result[target].find(cr => cr.value == r.value);
+                sheedData[field] = r['$'];
             }
+            delete result[k];
         }
         return result;
     }
