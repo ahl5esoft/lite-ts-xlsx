@@ -37,8 +37,7 @@ export abstract class ParserBase implements IParser {
                 continue;
 
             for (const r of v) {
-                const sheedData = result[target].find(cr => cr.value == r.value);
-                sheedData[field] = r['$'];
+                result[target].find(cr => cr.value == r.value)[field] = r['$'];
             }
             delete result[k];
         }
