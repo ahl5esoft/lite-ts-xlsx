@@ -49,7 +49,6 @@ describe('src/file-parser.ts', () => {
             };
             const self = new Self(enumFactory, new ParserFactory(enumFactory, {}, {}));
             const res = await self.parse('/Users/mac/Desktop/配置.xlsx');
-            console.dir(res, { depth: null });
             deepStrictEqual(res.WorkerData, [
                 {
                     value: 1,
@@ -82,6 +81,80 @@ describe('src/file-parser.ts', () => {
                     value: 3,
                     conditions: [[{ count: 5, op: '>=', valueType: 6 }]],
                     consume: [{ count: -2500, valueType: 1 }]
+                }
+            ]);
+        });
+
+        it.only('ok', async () => {
+            class CustomEnum {
+                public get allItem() {
+                    return Promise.resolve(this.m_EnumData);
+                }
+
+                public constructor(private m_EnumData = {}) { }
+
+                public async get(predicate: (item: IEnumItem) => boolean) {
+                    const allItem = await this.allItem;
+                    return Object.values(allItem).find(predicate);
+                }
+            }
+
+            const enumFactory = {
+                enum: {},
+                build(name: string) {
+                    if (name == 'ValueTypeData')
+                        this.enum[name] ??= new CustomEnum({
+                            1: { value: 1, text: '每日登录次数' },
+                            2: { value: 2, text: '每日挑战章节成功次数' },
+                            3: { value: 3, text: '每日挑战章节失败次数' },
+                        });
+                    else
+                        this.enum[name] = new CustomEnum();
+                    return this.enum[name];
+                }
+            };
+            const self = new Self(enumFactory, new ParserFactory(enumFactory, {}, {}));
+            const res = await self.parse('/Users/mac/Desktop/科技装置商店模版最终版.xlsx');
+            deepStrictEqual(res.ShopData, [
+                {
+                    value: 1,
+                    name: '常驻',
+                    order: 1,
+                    oneExpendNum: 240,
+                    tenExpendNum: 2100,
+                    openTime: 0,
+                    timeHide: 0,
+                    timeEnd: 0,
+                    videoNum: 1,
+                    popup: {
+                        todayCheckValueType: 1,
+                        weight: 1,
+                        condition: {
+                            loginPopup: [[{ count: 1, op: '=', valueType: 1 }]],
+                            challengeSucceedPopup: [[{ count: 1, op: '=', valueType: 2 }]],
+                            challengeFailPopup: [[{ count: 1, op: '=', valueType: 3 }]]
+                        }
+                    }
+                },
+                {
+                    value: 2,
+                    name: '时间',
+                    order: 2,
+                    oneExpendNum: 240,
+                    tenExpendNum: 2100,
+                    openTime: '2023-02-05 00:00:00',
+                    timeHide: '2023-10-05 00:00:00',
+                    timeEnd: '2023-10-05 00:00:00',
+                    videoNum: 1,
+                    popup: {
+                        todayCheckValueType: 1,
+                        weight: 1,
+                        condition: {
+                            loginPopup: [[{ count: 1, op: '=', valueType: 1 }]],
+                            challengeSucceedPopup: [[{ count: 1, op: '=', valueType: 2 }]],
+                            challengeFailPopup: [[{ count: 1, op: '=', valueType: 3 }]]
+                        }
+                    }
                 }
             ]);
         });

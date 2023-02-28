@@ -38,7 +38,19 @@ export abstract class ParserBase implements IParser {
                 continue;
 
             for (const r of v) {
-                result[target].find(cr => cr.value == r.value)[field] = r['$'];
+                const res = result[target].find(cr => cr.value == r.value);
+                if (res[field]) {
+                    if (Array.isArray(res[field])) {
+                        res[field] = [...res[field], ...r['$']];
+                    } else {
+                        res[field] = {
+                            ...res[field],
+                            ...r['$']
+                        };
+                    }
+                } else {
+                    res[field] = r['$'];
+                }
             }
             delete result[k];
         }
