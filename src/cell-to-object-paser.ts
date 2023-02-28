@@ -6,20 +6,33 @@ export class CellToObjectParser extends CellParserBase {
     public constructor(
         parserFactory: ParserFactoryBase,
     ) {
-        super(parserFactory, /^{(.+)}\.(.+):(.+)$/);
+        super(parserFactory, /^{(.+)}\.?(.*):(.+)$/);
     }
 
     public async parse(opt: ICellParseOption) {
         const [_, key, field, type] = this.match;
         opt.temp[opt.row.value] ??= {};
-        opt.temp[opt.row.value][opt.row[key]] ??= {};
 
-        const fieldParts = field.split('.');
-        const obj = [key, ...fieldParts].slice(0, -1).reduce((memo, r) => {
-            memo[r] ??= {};
-            return memo[r];
+        const keyParts = key.split('.');
+        const fieldParts = field ? field.split('.') : [];
+
+        const value = await this.parserFactory.build(type).parse(opt.cellValue);
+
+        const obj = keyParts.reduce((memo, r, index) => {
+            if (!fieldParts.length && index == keyParts.length - 1)
+                memo[opt.row[r]] ??= value;
+            else
+                memo[opt.row[r]] ??= {};
+            return memo[opt.row[r]];
         }, opt.temp[opt.row.value]);
-        obj[fieldParts[fieldParts.length - 1]] = await this.parserFactory.build(type).parse(opt.cellValue);
+
+        fieldParts.reduce((memo, r, index) => {
+            if (index == fieldParts.length - 1)
+                memo[r] = value;
+            else
+                memo[r] ??= {};
+            return memo[r];
+        }, obj);
 
         return {
             field: '$',
