@@ -10,7 +10,7 @@ describe('src/cell-to-object-paser.ts', () => {
             const mockParserFactory = new Mock<ParserFactoryBase>();
             const self = new Self(mockParserFactory.actual);
 
-            const ok = self.isMatch('{aa.bb.cc}:dd');
+            const ok = self.isMatch('{aa}.bb.cc:dd');
             strictEqual(ok, true);
 
             const mockParser = new Mock<IParser>();
