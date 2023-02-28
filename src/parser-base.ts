@@ -25,7 +25,8 @@ export abstract class ParserBase implements IParser {
         const result: { [key: string]: SheetData[]; } = {};
         for (const r of wb.SheetNames) {
             wb.Sheets[r]['!ref'] = this.getSheetRange(wb.Sheets[r]);
-            result[r] = await this.m_SheetParser.parse({
+            const name = r.replace('$', '');
+            result[name] = await this.m_SheetParser.parse({
                 rows: utils.sheet_to_json(wb.Sheets[r]),
                 sheetName: r,
             } as ISheetParseOption);
