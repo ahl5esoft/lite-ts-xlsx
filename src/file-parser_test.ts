@@ -6,7 +6,7 @@ import { IEnumItem } from './i-enum-factory';
 
 describe('src/file-parser.ts', () => {
     describe('.parser(v: string)', () => {
-        it('ok', async () => {
+        it.only('ok', async () => {
             class CustomEnum {
                 public get allItem() {
                     return Promise.resolve(this.m_EnumData);
@@ -48,7 +48,7 @@ describe('src/file-parser.ts', () => {
                 }
             };
             const self = new Self(enumFactory, new ParserFactory(enumFactory, {}, {}));
-            const res = await self.parse('/Users/mac/Desktop/配置.xlsx');
+            const res = await self.parse('/Users/mac/Desktop/Y-员工装备表-WorkerEquipData.xlsx');
             deepStrictEqual(res.WorkerData, [
                 {
                     value: 1,
@@ -85,7 +85,7 @@ describe('src/file-parser.ts', () => {
             ]);
         });
 
-        it.only('ok', async () => {
+        it('ok', async () => {
             class CustomEnum {
                 public get allItem() {
                     return Promise.resolve(this.m_EnumData);

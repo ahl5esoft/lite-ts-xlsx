@@ -6,6 +6,7 @@ import { CellToEnumValuesParser } from './cell-to-enum-values-parser';
 import { CellToMatrixParser } from './cell-to-matrix-parser';
 import { CellToNewRowExpParser } from './cell-to-new-row-exp-parser';
 import { CellToNewRowFieldParser } from './cell-to-new-row-field-parser';
+import { CellToNullParser } from './cell-to-null-parser';
 import { CellToObjectParser } from './cell-to-object-paser';
 import { CellWithNewRowParser } from './cell-with-new-row-parser';
 import { IEnumFactory, IEnumItem } from './i-enum-factory';
@@ -25,6 +26,7 @@ export class SheetParser implements IParser {
         private m_ParserFactory: ParserFactoryBase,
     ) {
         this.m_Parsers = [
+            new CellToNullParser(this.m_ParserFactory),
             new CellToEnumValueParser(this.m_ParserFactory),
             new CellToEnumValuesParser(this.m_ParserFactory),
             new CellToMatrixParser(this.m_ParserFactory),
