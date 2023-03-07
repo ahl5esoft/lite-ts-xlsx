@@ -54,18 +54,22 @@ export class SheetParser implements IParser {
                 const parser = this.m_Parsers.find(cr => {
                     return cr.isMatch(k);
                 });
-                if (parser) {
-                    const res = await parser.parse({
-                        cellValue: v,
-                        row,
-                        rows,
-                        temp
-                    });
-                    if (res)
-                        row[res.field] = res.value;
-                } else {
-                    const [field, type] = k.split(':');
-                    row[field] = await this.m_ParserFactory.build(type).parse(v);
+                try {
+                    if (parser) {
+                        const res = await parser.parse({
+                            cellValue: v,
+                            row,
+                            rows,
+                            temp
+                        });
+                        if (res)
+                            row[res.field] = res.value;
+                    } else {
+                        const [field, type] = k.split(':');
+                        row[field] = await this.m_ParserFactory.build(type).parse(v);
+                    }
+                } catch (ex) {
+                    throw new Error(`${opt.sheetName} 第 ${i} 行 ${ex.message}`);
                 }
             }
 
