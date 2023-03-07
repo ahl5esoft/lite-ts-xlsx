@@ -69,7 +69,7 @@ export class SheetParser implements IParser {
                         row[field] = await this.m_ParserFactory.build(type).parse(v);
                     }
                 } catch (ex) {
-                    throw new Error(`${opt.sheetName} 第 ${i} 行 ${ex.message}`);
+                    throw new Error(`${opt.sheetName} 表字段 ${k}, 第 ${i} 行 ${ex.message}`);
                 }
             }
 
