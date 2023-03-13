@@ -86,10 +86,8 @@ export class SheetParser implements IParser {
             } else {
                 rows.push(row);
             }
-        }
 
-        for (const r of rows) {
-            Object.keys(r).forEach(cr => {
+            Object.keys(row).forEach(cr => {
                 const fields = cr.split('.');
                 if (fields.length == 1)
                     return;
@@ -98,17 +96,16 @@ export class SheetParser implements IParser {
                 fields.reduce((memo, sr) => {
                     memo[sr] ??= {};
                     return memo[sr];
-                }, r)[lastField] = r[cr];
-                delete r[cr];
+                }, row)[lastField] = row[cr];
+                delete row[cr];
             });
 
-            if (!allEnumItem)
-                continue;
-
-            if (allEnumItem[r.value])
-                Object.assign(allEnumItem[r.value], r);
-            else
-                allEnumItem[r.value] = r;
+            if (allEnumItem) {
+                if (allEnumItem[row.value])
+                    Object.assign(allEnumItem[row.value], row);
+                else
+                    allEnumItem[row.value] = row;
+            }
         }
 
         return allEnumItem ? Object.values(allEnumItem) : rows;
