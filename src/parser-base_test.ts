@@ -81,17 +81,17 @@ class Self extends ParserBase {
                     },
                     C1: {
                         t: 's',
-                        v: 'rewards:数值数组',
-                        r: '<t>rewards:数值数组</t>',
-                        h: 'rewards:数值数组',
-                        w: 'rewards:数值数组'
+                        v: '[index].rewards:数值数组',
+                        r: '<t>[index].rewards:数值数组</t>',
+                        h: '[index].rewards:数值数组',
+                        w: '[index].rewards:数值数组'
                     },
                     D1: {
                         t: 's',
-                        v: 'conditions:json',
-                        r: '<t>conditions:json</t>',
-                        h: 'conditions:json',
-                        w: 'conditions:json'
+                        v: '[index].conditions:json',
+                        r: '<t>[index].conditions:json</t>',
+                        h: '[index].conditions:json',
+                        w: '[index].conditions:json'
                     },
                     A2: { t: 's', v: '层数', r: '<t>层数</t>', h: '层数', w: '层数' },
                     B2: { t: 's', v: '索引', r: '<t>索引</t>', h: '索引', w: '索引' },
@@ -222,7 +222,6 @@ describe('src/parser-base.ts', () => {
                         ],
                         fixed: [
                             {
-                                index: 0,
                                 rewards: [
                                     {
                                         count: 1,
@@ -232,7 +231,6 @@ describe('src/parser-base.ts', () => {
                                 conditions: [1, 1, 3, 2]
                             },
                             {
-                                index: 1,
                                 rewards: [
                                     {
                                         count: 1,
