@@ -45,12 +45,20 @@ export class SheetParser implements IParser {
 
         let rows = [];
         const temp = {};
+        const columns = [];
         for (const [i, r] of opt.rows.entries()) {
-            if (i == 0)
-                continue;
-
             const row: any = {};
             for (let [k, v] of Object.entries(r)) {
+                if (i == 0) {
+                    const arr = k.split(':');
+                    columns.push({
+                        field: arr[0],
+                        title: v,
+                        type: arr[1]
+                    });
+                    continue;
+                }
+
                 const parser = this.m_Parsers.find(cr => {
                     return cr.isMatch(k);
                 });
@@ -72,6 +80,8 @@ export class SheetParser implements IParser {
                     throw new Error(`表${opt.sheetName}字段${k} 第${i}行 ${ex.message}`);
                 }
             }
+            if (i == 0)
+                continue;
 
             if (Object.keys(temp).length) {
                 const item = rows.find(r => r.value == row.value);
@@ -108,6 +118,9 @@ export class SheetParser implements IParser {
             }
         }
 
-        return allEnumItem ? Object.values(allEnumItem) : rows;
+        return {
+            rows: allEnumItem ? Object.values(allEnumItem) : rows,
+            columns,
+        };
     }
 }
