@@ -11,7 +11,13 @@ import { CellToObjectParser } from './cell-to-object-paser';
 import { CellWithNewRowParser } from './cell-with-new-row-parser';
 import { IEnumFactory, IEnumItem } from './i-enum-factory';
 
-export interface ISheetParseOption {
+export type Column = {
+    field: string;
+    title: string;
+    type: string;
+}
+
+export type SheetParseOption = {
     sheetName: string,
     rows: any[];
 }
@@ -37,7 +43,7 @@ export class SheetParser implements IParser {
         ];
     }
 
-    public async parse(opt: ISheetParseOption) {
+    public async parse(opt: SheetParseOption) {
         let allEnumItem: { [value: number]: IEnumItem; };
         const sheetNameParts = opt.sheetName.split('.');
         if (!opt.sheetName.includes(SheetParser.unmergeFlag) && !sheetNameParts[1] && sheetNameParts[0].endsWith('Data'))
@@ -45,20 +51,22 @@ export class SheetParser implements IParser {
 
         let rows = [];
         const temp = {};
-        const columns = [];
+        let columns: Column[];
         for (const [i, r] of opt.rows.entries()) {
+            if (i == 0) {
+                columns = Object.entries(r).map(([k, v]) => {
+                    const arr = k.split(':');
+                    return {
+                        field: arr[0],
+                        title: v as string,
+                        type: arr[1]
+                    };
+                });
+                continue;
+            }
+
             const row: any = {};
             for (let [k, v] of Object.entries(r)) {
-                if (i == 0) {
-                    const arr = k.split(':');
-                    columns.push({
-                        field: arr[0],
-                        title: v,
-                        type: arr[1]
-                    });
-                    continue;
-                }
-
                 const parser = this.m_Parsers.find(cr => {
                     return cr.isMatch(k);
                 });
@@ -80,8 +88,6 @@ export class SheetParser implements IParser {
                     throw new Error(`表${opt.sheetName}字段${k} 第${i}行 ${ex.message}`);
                 }
             }
-            if (i == 0)
-                continue;
 
             if (Object.keys(temp).length) {
                 const item = rows.find(r => r.value == row.value);
