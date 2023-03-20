@@ -43,20 +43,37 @@ describe('src/sheet-parser.ts', () => {
             );
 
             const res = await self.parse({
-                rows: [null, {
+                rows: [{
+                    'a:b': '数值',
+                    'c.d.i:e': '名字'
+                }, {
                     'a:b': 1,
                     'c.d.i:e': 'f'
                 }],
                 sheetName: 'EnumData',
             });
-            deepStrictEqual(res, [{
-                a: 'g',
-                c: {
-                    d: {
-                        i: 'h'
+            deepStrictEqual(res, {
+                columns: [
+                    {
+                        field: 'a',
+                        title: '数值',
+                        type: 'b'
+                    },
+                    {
+                        field: 'c.d.i',
+                        title: '名字',
+                        type: 'e'
                     }
-                }
-            }]);
+                ],
+                rows: [{
+                    a: 'g',
+                    c: {
+                        d: {
+                            i: 'h'
+                        }
+                    }
+                }]
+            });
         });
 
         it('cover', async () => {
@@ -86,20 +103,37 @@ describe('src/sheet-parser.ts', () => {
             );
 
             const res = await self.parse({
-                rows: [null, {
+                rows: [{
+                    'a:b': '数值',
+                    'c.d.i:e': '名字'
+                }, {
                     'a:b': 1,
                     'c.d.i:e': 'f'
                 }],
                 sheetName: `EnumData.${Self.unmergeFlag}`,
             });
-            deepStrictEqual(res, [{
-                a: 'g',
-                c: {
-                    d: {
-                        i: 'h'
+            deepStrictEqual(res, {
+                columns: [
+                    {
+                        field: 'a',
+                        title: '数值',
+                        type: 'b'
+                    },
+                    {
+                        field: 'c.d.i',
+                        title: '名字',
+                        type: 'e'
                     }
-                }
-            }]);
+                ],
+                rows: [{
+                    a: 'g',
+                    c: {
+                        d: {
+                            i: 'h'
+                        }
+                    }
+                }]
+            });
         });
     });
 });
