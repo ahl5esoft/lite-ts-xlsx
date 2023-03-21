@@ -3,7 +3,7 @@ import lodash from 'lodash';
 import { utils, WorkBook, WorkSheet } from 'xlsx';
 
 import { IEnumFactory } from './i-enum-factory';
-import { ISheetParseOption, SheetParser } from './sheet-parser';
+import { SheetParseOption, SheetParser } from './sheet-parser';
 
 interface SheetData {
     value?: number;
@@ -29,7 +29,7 @@ export abstract class ParserBase implements IParser {
             result[name] = await this.m_SheetParser.parse({
                 rows: utils.sheet_to_json(wb.Sheets[r]),
                 sheetName: r,
-            } as ISheetParseOption);
+            } as SheetParseOption);
         }
 
         for (const [k, v] of Object.entries(result)) {
