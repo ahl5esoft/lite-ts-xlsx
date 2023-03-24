@@ -1,8 +1,7 @@
 import { IParser, ParserFactoryBase } from 'lite-ts-parser';
 
 import { CellParserBase } from './cell-parser-base';
-import { CellToEnumValueParser } from './cell-to-enum-value-parser';
-import { CellToEnumValuesParser } from './cell-to-enum-values-parser';
+import { CellToAnyParser } from './cell-to-any-parser';
 import { CellToMatrixParser } from './cell-to-matrix-parser';
 import { CellToNewRowExpParser } from './cell-to-new-row-exp-parser';
 import { CellToNewRowFieldParser } from './cell-to-new-row-field-parser';
@@ -15,12 +14,12 @@ export type Column = {
     field: string;
     title: string;
     type: string;
-}
+};
 
 export type SheetParseOption = {
     sheetName: string,
     rows: any[];
-}
+};
 
 export class SheetParser implements IParser {
     public static unmergeFlag = '$';
@@ -33,13 +32,12 @@ export class SheetParser implements IParser {
     ) {
         this.m_Parsers = [
             new CellToNullParser(this.m_ParserFactory),
-            new CellToEnumValueParser(this.m_ParserFactory),
-            new CellToEnumValuesParser(this.m_ParserFactory),
             new CellToMatrixParser(this.m_ParserFactory),
             new CellToNewRowExpParser(this.m_ParserFactory),
             new CellToNewRowFieldParser(this.m_ParserFactory),
             new CellToObjectParser(this.m_ParserFactory),
             new CellWithNewRowParser(this.m_ParserFactory),
+            new CellToAnyParser(this.m_ParserFactory),
         ];
     }
 
