@@ -3,11 +3,14 @@ import lodash from 'lodash';
 import { utils, WorkBook, WorkSheet } from 'xlsx';
 
 import { IEnumFactory } from './i-enum-factory';
-import { SheetParseOption, SheetParser } from './sheet-parser';
+import { Column, SheetParseOption, SheetParser } from './sheet-parser';
 
 interface SheetData {
-    value?: number;
-    [key: string]: any;
+    rows: {
+        value?: number;
+        [key: string]: any;
+    }[];
+    columes: Column[];
 }
 
 export abstract class ParserBase implements IParser {
@@ -22,7 +25,7 @@ export abstract class ParserBase implements IParser {
 
     public async parse(v: string) {
         const wb = await this.getWorkbook(v);
-        const result: { [key: string]: SheetData[]; } = {};
+        const result: { [key: string]: SheetData; } = {};
         for (const r of wb.SheetNames) {
             wb.Sheets[r]['!ref'] = this.getSheetRange(wb.Sheets[r]);
             const name = r.replace('$', '');
@@ -37,8 +40,8 @@ export abstract class ParserBase implements IParser {
             if (!field)
                 continue;
 
-            for (const r of v) {
-                const res = result[target].find(cr => cr.value == r.value);
+            for (const r of v.rows) {
+                const res = result[target].rows.find(cr => cr.value == r.value);
                 if (res[field]) {
                     if (Array.isArray(res[field])) {
                         res[field] = [...res[field], ...r['$']];
