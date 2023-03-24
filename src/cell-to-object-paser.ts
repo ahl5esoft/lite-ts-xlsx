@@ -13,9 +13,10 @@ export class CellToObjectParser extends CellParserBase {
         const [_, key, field, type] = this.match;
         opt.temp[opt.row.value] ??= {};
 
+        const value = await this.parseCellValue(type, opt.cellValue);
+
         const keyParts = key.split('.');
         const fieldParts = field ? field.split('.') : [];
-        const value = await this.parserFactory.build(type).parse(opt.cellValue);
         const obj = keyParts.reduce((memo, r, index) => {
             if (!fieldParts.length && index == keyParts.length - 1)
                 memo[opt.row[r]] ??= value;
