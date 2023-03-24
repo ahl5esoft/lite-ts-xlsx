@@ -21,7 +21,8 @@ export class CellToMatrixParser extends CellParserBase {
 
             return memo[index];
         }, opt.temp[opt.row.value]);
-        obj[this.match[3]] = await this.parserFactory.build(this.match[4]).parse(opt.cellValue);
+
+        obj[this.match[3]] = await this.parseCellValue(this.match[4], opt.cellValue);
 
         return {
             field: '$',
